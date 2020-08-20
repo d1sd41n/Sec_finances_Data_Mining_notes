@@ -26,24 +26,37 @@ def get_fin_docs(CIK="1018724"):
     I_D_links = []
 
     # get all interactive data financial statements
-    print("Getting interactive Data...")
-    entries = soup.find_all(id="interactiveDataBtn")
+    table = soup.find(class_="tableFile2")
 
-    for e in entries:
-        I_D_links.append("https://www.sec.gov" + e.get('href'))
+    rows = table.find_all("tr")[1:]
+    for row in rows:
+        l = []
+        s = "interactiveDataBtn"
+        if s in row.decode():
+            date = row.find_all("td")[3].string
+            url = row.find(id=s).get('href')
+            l.append("https://www.sec.gov" + url)
+            l.append(date)
+            I_D_links.append(l)
+    print(I_D_links)
 
     F_S_links = []
     len_docs = len(I_D_links)
     print("Gettings docs URLs... ")
     for n, l in enumerate(I_D_links):
         print(str(int(100*n/len_docs)) + "%...")
-        endpoint = l
+        endpoint = l[0]
+        l2 = []
         response = requests.get(url = endpoint)
         soup = BeautifulSoup(response.content, 'lxml')
         entries = soup.find("a", string="View Excel Document")
-        F_S_links.append("https://www.sec.gov" + entries.get('href'))
+        url = entries.get('href')
+        l2.append("https://www.sec.gov" + url)
+        l2.append(l[1])
+        F_S_links.append(l2)
     return F_S_links
 
+get_fin_docs()
 d = get_fin_docs()
 
 print(d)
