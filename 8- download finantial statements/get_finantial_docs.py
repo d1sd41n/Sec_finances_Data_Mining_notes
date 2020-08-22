@@ -55,9 +55,5 @@ def get_fin_docs(CIK="1018724"):
         entries = soup.find("a", string="View Excel Document")
         url = entries.get('href')
         I_D_links[n].append("https://www.sec.gov" + url)
+    print("done!...")
     return I_D_links
-
-get_fin_docs()
-d = get_fin_docs()
-
-print(d)
